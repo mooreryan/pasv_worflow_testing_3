@@ -1,14 +1,13 @@
-FROM ocaml/opam:alpine-ocaml-4.12
+FROM ocamlpro/ocaml:4.12-2021-08-29
+
+# IF YOU CHANGE THE PASV.OPAM FILE, THEN YOU NEED TO REBUILD THE DOCKER IMAGE.
 
 # Make sure the sources are all there
-COPY . /pasv
+COPY pasv.opam /pasv/pasv.opam
 WORKDIR /pasv
 
-RUN sudo apk add linux-headers
+RUN sudo apk add bubblewrap m4 bash linux-headers build-base perl
 
-# Build the deps needed to build pasv
-RUN eval $(opam env) && \
-    opam update -y
+RUN sudo opam init -y --shell-setup
 
-RUN eval $(opam env) && \
-    opam install . -y --deps-only # --with-doc --with-test
+RUN sudo opam switch create . ocaml-system --deps-only --with-doc --with-test --locked -y
