@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/mooreryan/pasv_build_static:1
+      image: ghcr.io/mooreryan/pasv_build_static@sha256:3d6cc09618ef11a36459db6d7fbee744617b407ed9699fe1c94ef65807665f44
       credentials:
-        username: mooreryan
+        username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
       options: --user root
 
