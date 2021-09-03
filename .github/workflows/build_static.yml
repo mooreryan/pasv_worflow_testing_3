@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ghcr.io/owner/image
+      image: ghcr.io/mooreryan/pasv_build_static:1
       options: --user root
 
     steps:
