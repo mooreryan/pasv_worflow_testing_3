@@ -1,0 +1,82 @@
+name: Build static
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build_static:
+    runs-on: ubuntu-latest
+    container:
+      image: ocamlpro/ocaml:4.12-2021-08-29
+      options: --user root
+
+    steps:
+      - name: Cache opam switch
+        uses: actions/cache@v2
+        id: cache-opam-switch
+        with:
+          path: _opam
+          key: opam-${{ hashFiles('_opam') }}
+          restore-keys: |
+            opam-
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - run: echo "LOCAL_PATH=$HOME/.local/bin" >> $GITHUB_ENV
+      - run: echo "CLUSTALO_EXE=$LOCAL_PATH/clustalo" >> $GITHUB_ENV
+
+      - name: Setup path
+        run: |
+          mkdir -p "$LOCAL_PATH"
+          echo "$LOCAL_PATH" >> $GITHUB_PATH
+
+      - name: Download Clustal Omega
+        run: |
+          \curl -L http://www.clustal.org/omega/clustalo-1.2.4-Ubuntu-x86_64 > "$CLUSTALO_EXE"
+
+      - name: Setup and check Clustal Omega
+        run: |
+          chmod 755 "$CLUSTALO_EXE"
+          clustalo --version
+
+      - name: Download MAFFT
+        run: |
+          \curl -L https://mafft.cbrc.jp/alignment/software/mafft-7.481-without-extensions-src.tgz \
+          | tar xz
+
+      - name: Install MAFFT
+        run: cd mafft-*/core/ && make clean && make && sudo make install
+
+      - name: Download HMMER
+        run: \curl -L http://eddylab.org/software/hmmer/hmmer-3.3.2.tar.gz | tar xz
+
+      - name: Install HMMER
+        run: cd hmmer-3.3.2 && ./configure && make && sudo make install
+
+      - run: apk add bubblewrap m4 bash linux-headers build-base
+
+      - run: opam init -y
+
+      - name: Create switch
+        if: steps.cache-opam-switch.outputs.cache-hit != 'true'
+        run: opam switch create . ocaml-system --deps-only --locked --with-doc --with-test -y
+
+      - run: opam exec -- make build
+
+      - run: opam exec -- make install
+
+      - run: opam exec -- make test
+
+      - name: Upload the build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: alpine-4.12.0-static-pasv
+          path: _build/install/default/bin/pasv
