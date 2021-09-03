@@ -15,9 +15,6 @@ jobs:
     container:
       image: ghcr.io/owner/image
       options: --user root
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.ghcr_token }}
 
     steps:
       - run: echo 'hi ryan'
