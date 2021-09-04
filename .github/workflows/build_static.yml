@@ -43,6 +43,8 @@ jobs:
       - run: whoami
       - run: echo $HOME
       - run: ls -lah $HOME
+      - run: echo $GITHUB_WORKSPACE
+      - run: ls -lah $GITHUB_WORKSPACE
 
       # - run: echo "LOCAL_PATH=$HOME/.local/bin" >> $GITHUB_ENV
       # - run: echo "CLUSTALO_EXE=$LOCAL_PATH/clustalo" >> $GITHUB_ENV
