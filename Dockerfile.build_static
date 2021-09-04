@@ -2,7 +2,16 @@ FROM ocamlpro/ocaml:4.12-2021-08-29
 
 # IF YOU CHANGE THE PASV.OPAM FILE, THEN YOU NEED TO REBUILD THE DOCKER IMAGE.
 
-RUN echo hi
+USER root
+RUN adduser -D -G ocaml -u 1001 runner -s /bin/sh
+RUN echo 'runner ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+USER runner
+WORKDIR /home/runner
+ENV OPAMROOT /home/runner/.opam
+
+# TODO add bubblewrap and bash
+
+# RUN echo hi
 
 # Make sure the sources are all there
 COPY pasv.2.opam /pasv/pasv.opam
@@ -12,8 +21,12 @@ RUN sudo apk add bubblewrap m4 bash linux-headers build-base perl
 
 RUN opam init -y
 
-RUN eval $(opam env) && \
-    sudo opam switch create . ocaml-system --deps-only --locked -y
+RUN opam switch create ocaml-system
+
+RUN opam install . --deps-only -y
+
+# RUN eval $(opam env) && \
+#     sudo opam switch create . ocaml-system --deps-only --locked -y
 
 # This is the default user: runner:x:1001:121
 
