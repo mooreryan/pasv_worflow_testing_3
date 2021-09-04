@@ -26,6 +26,8 @@ jobs:
       # options: --user root
 
     steps:
+      - run: sudo apk add m4 linux-headers build-base
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -99,7 +101,7 @@ jobs:
       # - name: Install HMMER
       #   run: cd hmmer-3.3.2 && ./configure && make && sudo make install
 
-      # - run: apk add bubblewrap m4 bash linux-headers build-base
+      # - run: apk add bubblewrap bash m4 linux-headers build-base
 
       # - run: opam init -y
 
