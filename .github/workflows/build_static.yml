@@ -12,8 +12,8 @@ jobs:
   build_static:
     runs-on: ubuntu-latest
 
-    container:
-      image: ocamlpro/ocaml:4.12-2021-08-29
+    # container:
+    #   image: ocamlpro/ocaml:4.12-2021-08-29
       # image: ghcr.io/mooreryan/pasv_build_static@sha256:3d6cc09618ef11a36459db6d7fbee744617b407ed9699fe1c94ef65807665f44
       # credentials:
       #   username: ${{ github.actor }}
@@ -33,10 +33,13 @@ jobs:
       #     restore-keys: |
       #       opam-
 
-      # - name: Checkout code
-      #   uses: actions/checkout@v2
-      #   with:
-      #     submodules: recursive
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - run: cat /etc/passwd
+      - run: whoami
 
       # - run: echo "LOCAL_PATH=$HOME/.local/bin" >> $GITHUB_ENV
       # - run: echo "CLUSTALO_EXE=$LOCAL_PATH/clustalo" >> $GITHUB_ENV
