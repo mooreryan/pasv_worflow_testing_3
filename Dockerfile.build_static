@@ -2,12 +2,28 @@ FROM ocamlpro/ocaml:4.12-2021-08-29
 
 # IF YOU CHANGE THE PASV.OPAM FILE, THEN YOU NEED TO REBUILD THE DOCKER IMAGE.
 
+RUN echo hi
+
 # Make sure the sources are all there
-COPY pasv.opam /pasv/pasv.opam
+COPY pasv.2.opam /pasv/pasv.opam
 WORKDIR /pasv
 
 RUN sudo apk add bubblewrap m4 bash linux-headers build-base perl
 
-RUN sudo opam init -y --shell-setup
+RUN opam init -y
 
-RUN sudo opam switch create . ocaml-system --deps-only --with-doc --with-test --locked -y
+RUN eval $(opam env) && \
+    sudo opam switch create . ocaml-system --deps-only --locked -y
+
+# --disable-sandboxing
+
+# RUN opam switch create . ocaml-system --deps-only --locked --with-doc --with-test -y
+
+# RUN eval $(opam env) && \
+#     sudo opam switch create ocaml-system -y
+
+# RUN eval $(opam env --switch=ocaml-system) && \
+#     sudo opam install . --deps-only --with-doc --with-test -y
+
+# RUN eval $(opam env --switch=ocaml-system) && \
+#     sudo opam install dune
