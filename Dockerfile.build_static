@@ -2,7 +2,13 @@ FROM ocamlpro/ocaml:4.12-2021-08-29
 
 # IF YOU CHANGE THE PASV.OPAM FILE, THEN YOU NEED TO REBUILD THE DOCKER IMAGE.
 
+# RUN sudo apk add bubblewrap m4 bash linux-headers build-base perl
+
+# This 'runner' user stuff is to match the github checkout code action user.
 USER root
+
+RUN apk add bash bubblewrap
+
 RUN adduser -D -G ocaml -u 1001 runner -s /bin/sh
 RUN echo 'runner ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 USER runner
@@ -14,31 +20,20 @@ ENV OPAMROOT /home/runner/.opam
 # RUN echo hi
 
 # Make sure the sources are all there
-COPY pasv.2.opam /pasv/pasv.opam
-WORKDIR /pasv
+# COPY pasv.opam /pasv/pasv.opam
+# WORKDIR /pasv
 
-RUN sudo apk add bubblewrap m4 bash linux-headers build-base perl
+RUN opam init -y --disable-sandboxing
 
-RUN opam init -y
+# These are values from opam env
+ENV OPAM_SWITCH_PREFIX='/home/runner/.opam/default'
+ENV CAML_LD_LIBRARY_PATH='/home/runner/.opam/default/lib/stublibs:Updated by package ocaml'
+ENV OCAML_TOPLEVEL_PATH='/home/runner/.opam/default/lib/toplevel'
+ENV MANPATH=':/home/runner/.opam/default/man'
+ENV PATH='/home/runner/.opam/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 
-RUN opam switch create ocaml-system
+# RUN opam switch create ocaml-system
 
-RUN opam install . --deps-only -y
+# RUN opam install . --deps-only -y
 
-# RUN eval $(opam env) && \
-#     sudo opam switch create . ocaml-system --deps-only --locked -y
-
-# This is the default user: runner:x:1001:121
-
-# --disable-sandboxing
-
-# RUN opam switch create . ocaml-system --deps-only --locked --with-doc --with-test -y
-
-# RUN eval $(opam env) && \
-#     sudo opam switch create ocaml-system -y
-
-# RUN eval $(opam env --switch=ocaml-system) && \
-#     sudo opam install . --deps-only --with-doc --with-test -y
-
-# RUN eval $(opam env --switch=ocaml-system) && \
-#     sudo opam install dune
+# WORKDIR /home/runner

@@ -11,6 +11,11 @@ on:
 jobs:
   build_static:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/mooreryan/ocaml_alpine:4.12-2021-08-29
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     # container:
     #   image: ocamlpro/ocaml:4.12-2021-08-29
@@ -21,9 +26,31 @@ jobs:
       # options: --user root
 
     steps:
-      - run: echo 'hi ryan'
-      - run: cat /etc/passwd
-      - run: whoami
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install deps
+        run: opam install . --deps-only # --with-doc --with-test
+
+      - name: Build
+        run: opam exec -- dune build --profile=release
+
+      - name: Install
+        run: opam exec -- dune install --profile=release
+
+      - name: Upload the build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: alpine-4.12.0-static-pasv
+          path: _build/install/default/bin/pasv
+
+
+
+      # - run: echo 'hi ryan'
+      # - run: cat /etc/passwd
+      # - run: whoami
 
       # - name: Cache opam switch
       #   uses: actions/cache@v2
@@ -34,17 +61,12 @@ jobs:
       #     restore-keys: |
       #       opam-
 
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-
-      - run: cat /etc/passwd
-      - run: whoami
-      - run: echo $HOME
-      - run: ls -lah $HOME
-      - run: echo $GITHUB_WORKSPACE
-      - run: ls -lah $GITHUB_WORKSPACE
+      # - run: cat /etc/passwd
+      # - run: whoami
+      # - run: echo $HOME
+      # - run: ls -lah $HOME
+      # - run: echo $GITHUB_WORKSPACE
+      # - run: ls -lah $GITHUB_WORKSPACE
 
       # - run: echo "LOCAL_PATH=$HOME/.local/bin" >> $GITHUB_ENV
       # - run: echo "CLUSTALO_EXE=$LOCAL_PATH/clustalo" >> $GITHUB_ENV
