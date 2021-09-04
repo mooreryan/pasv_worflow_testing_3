@@ -15,6 +15,8 @@ RUN opam init -y
 RUN eval $(opam env) && \
     sudo opam switch create . ocaml-system --deps-only --locked -y
 
+# This is the default user: runner:x:1001:121
+
 # --disable-sandboxing
 
 # RUN opam switch create . ocaml-system --deps-only --locked --with-doc --with-test -y
