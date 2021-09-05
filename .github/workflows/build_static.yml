@@ -12,18 +12,10 @@ jobs:
   build_static:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/mooreryan/ocaml_alpine:4.12-2021-08-29
+      image: ghcr.io/mooreryan/ocaml_alpine:4.12-2021-08-29-be9bf59
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-
-    # container:
-    #   image: ocamlpro/ocaml:4.12-2021-08-29
-      # image: ghcr.io/mooreryan/pasv_build_static@sha256:3d6cc09618ef11a36459db6d7fbee744617b407ed9699fe1c94ef65807665f44
-      # credentials:
-      #   username: ${{ github.actor }}
-      #   password: ${{ secrets.GITHUB_TOKEN }}
-      # options: --user root
 
     steps:
       - run: sudo apk add m4 linux-headers build-base
